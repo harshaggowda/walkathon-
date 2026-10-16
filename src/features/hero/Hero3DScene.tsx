@@ -191,15 +191,18 @@ export const Hero3DScene: React.FC = () => {
 
     // ANIMATION LOOP
     let animationFrameId: number;
-    let clock = new THREE.Clock();
+    let lastTime = performance.now();
+    const startTime = performance.now();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
       if (!isVisible || document.hidden) return;
 
-      const delta = clock.getDelta();
-      const time = clock.getElapsedTime();
+      const now = performance.now();
+      const delta = Math.min((now - lastTime) / 1000, 0.1);
+      const time = (now - startTime) / 1000;
+      lastTime = now;
 
       // Continuous gentle track rotation symbolizing ongoing movement
       trackGroup.rotation.y += delta * 0.12;
