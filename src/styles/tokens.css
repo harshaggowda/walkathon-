@@ -1,0 +1,76 @@
+/**
+ * CINEMATIC DESIGN SYSTEM TOKENS
+ * Curated palette: Midnight Navy, Energetic Orange, Athletic Gold, and Warm Ivory.
+ * High-end editorial sports aesthetic with depth, responsive typography, and spatial tokens.
+ */
+
+:root {
+  /* Color Palette - Dark Cinematic Midnight */
+  --bg-darkest: #050810;
+  --bg-primary: #080C16;
+  --bg-secondary: #0D1527;
+  --bg-card: rgba(16, 26, 49, 0.65);
+  --bg-card-hover: rgba(23, 37, 68, 0.75);
+  --bg-glass: rgba(11, 19, 36, 0.75);
+  --bg-glass-strong: rgba(11, 19, 36, 0.92);
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.16);
+  --border-glow: rgba(255, 87, 34, 0.45);
+  --border-gold: rgba(245, 166, 35, 0.4);
+
+  /* Primary Accent - Energetic Orange */
+  --accent-orange: #FF5722;
+  --accent-orange-light: #FF7043;
+  --accent-orange-glow: rgba(255, 87, 34, 0.35);
+  --accent-orange-deep: #D84315;
+
+  /* Secondary Accents */
+  --accent-gold: #F5A623;
+  --accent-gold-soft: rgba(245, 166, 35, 0.18);
+  --accent-teal: #00E5FF;
+  --accent-teal-glow: rgba(0, 229, 255, 0.3);
+
+  /* Text & Readability - Warm Ivory & Athletic Slate */
+  --text-ivory: #F7F5F0;
+  --text-primary: #F7F5F0;
+  --text-secondary: #C8D1E0;
+  --text-muted: #8292AD;
+  --text-dark: #080C16;
+
+  /* Status Colors */
+  --status-tentative: #FFB74D;
+  --status-tentative-bg: rgba(255, 183, 77, 0.14);
+  --status-confirmed: #66BB6A;
+  --status-confirmed-bg: rgba(102, 187, 106, 0.14);
+
+  /* Typography Scales */
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --shadow-glow-orange: 0 0 35px rgba(255, 87, 34, 0.32);
+  --shadow-glow-gold: 0 0 30px rgba(245, 166, 35, 0.25);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Layout Containers */
+  --container-max: 1280px;
+  --container-wide: 1440px;
+  --container-narrow: 960px;
+  --container-padding: clamp(1.25rem, 4vw, 3rem);
+
+  /* Transitions */
+  --transition-fast: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-dramatic: 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
