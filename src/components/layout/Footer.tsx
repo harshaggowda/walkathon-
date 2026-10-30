@@ -4,6 +4,8 @@ import { EVENT_CONFIG } from '../../config/event.config';
 import { Modal } from '../ui/Modal';
 import styles from './Footer.module.css';
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export const Footer: React.FC = () => {
   const [legalModalContent, setLegalModalContent] = useState<{
     title: string;
@@ -98,7 +100,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Legal / Copyright Bar */}
         <div className={styles.bottomBar}>
           <div>
-            &copy; {new Date().getFullYear()} {EVENT_CONFIG.branding.name}. All rights reserved.
+            &copy; {CURRENT_YEAR} {EVENT_CONFIG.branding.name}. All rights reserved.
           </div>
 
           <div className={styles.legalLinks}>

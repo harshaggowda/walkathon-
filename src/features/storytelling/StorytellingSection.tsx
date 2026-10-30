@@ -1,162 +1,178 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Footprints, Users, HeartHandshake, Compass } from 'lucide-react';
-import { EVENT_CONFIG } from '../../config/event.config';
+import { Compass } from 'lucide-react';
+import { JOURNEY_CHECKPOINTS } from '../../config/journey.config';
+import { CheckpointPanel } from './CheckpointPanel';
+import { JourneyFallback } from './JourneyFallback';
 import styles from './StorytellingSection.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const Journey3DScene = lazy(() =>
+  import('./Journey3DScene').then((m) => ({ default: m.Journey3DScene }))
+);
+
 export const StorytellingSection: React.FC = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState<number>(0);
+  const [activeCheckpointIndex, setActiveCheckpointIndex] = useState<number>(0);
+
+  const [webGlSupported] = useState<boolean>(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      return !!(
+        window.WebGLRenderingContext &&
+        (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(() => {
+    return (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+  });
 
   useEffect(() => {
-    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (isReduced) return;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleMotion = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mediaQuery.addEventListener('change', handleMotion);
+
+    if (prefersReducedMotion || !webGlSupported) return;
+
+    const track = trackRef.current;
+    if (!track) return;
 
     const ctx = gsap.context(() => {
-      itemsRef.current.forEach((item) => {
-        if (!item) return;
+      ScrollTrigger.create({
+        trigger: track,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.6,
+        onUpdate: (self) => {
+          const p = self.progress;
+          setProgress(p);
 
-        const visual = item.querySelector(`.${styles.storyVisual}`);
-        const content = item.querySelector(`.${styles.storyContent}`);
-
-        gsap.fromTo(
-          [content, visual],
-          {
-            opacity: 0,
-            y: 45,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.9,
-            stagger: 0.2,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: item,
-              start: 'top 80%',
-              toggleActions: 'play none none reverse',
-            },
+          // Threshold determination for active checkpoint
+          let idx = 0;
+          if (p >= 0.84) {
+            idx = 3;
+          } else if (p >= 0.56) {
+            idx = 2;
+          } else if (p >= 0.28) {
+            idx = 1;
+          } else {
+            idx = 0;
           }
-        );
+          setActiveCheckpointIndex(idx);
+        },
       });
-    }, sectionRef);
+    }, track);
 
-    return () => ctx.revert();
-  }, []);
+    return () => {
+      ctx.revert();
+      mediaQuery.removeEventListener('change', handleMotion);
+    };
+  }, [prefersReducedMotion, webGlSupported]);
 
-  const getVisualSvg = (index: number) => {
-    switch (index) {
-      case 0:
-        return (
-          <svg viewBox="0 0 200 120" width="100%" height="100%" fill="none">
-            <circle cx="100" cy="60" r="14" fill="#FF5722" />
-            <circle cx="100" cy="60" r="32" stroke="#FF7043" strokeWidth="2" strokeDasharray="4 4" opacity="0.7" />
-            <circle cx="100" cy="60" r="50" stroke="#F5A623" strokeWidth="1.5" strokeDasharray="6 6" opacity="0.4" />
-          </svg>
-        );
-      case 1:
-        return (
-          <svg viewBox="0 0 200 120" width="100%" height="100%" fill="none">
-            <path d="M 20 80 Q 70 30, 100 60 T 180 40" stroke="#FF5722" strokeWidth="6" strokeLinecap="round" />
-            <path d="M 20 95 Q 70 45, 100 75 T 180 55" stroke="#F5A623" strokeWidth="4" strokeLinecap="round" opacity="0.8" />
-            <circle cx="60" cy="55" r="5" fill="#FFFFFF" />
-            <circle cx="100" cy="60" r="5" fill="#FFFFFF" />
-            <circle cx="140" cy="50" r="5" fill="#FFFFFF" />
-          </svg>
-        );
-      default:
-        return (
-          <svg viewBox="0 0 200 120" width="100%" height="100%" fill="none">
-            <path d="M 30 100 L 170 100" stroke="#8292AD" strokeWidth="2" />
-            <circle cx="100" cy="70" r="26" fill="#F5A623" opacity="0.85" />
-            <path d="M 50 100 L 70 65 L 90 100" fill="#131E38" />
-            <path d="M 85 100 L 105 50 L 125 100" fill="#1A294C" />
-            <path d="M 120 100 L 140 70 L 160 100" fill="#131E38" />
-          </svg>
-        );
-    }
+  // Jump to checkpoint when clicking HUD dots
+  const handleSelectCheckpoint = (targetIdx: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const targetProgress = JOURNEY_CHECKPOINTS[targetIdx].progress;
+    const trackTop = track.offsetTop;
+    const trackHeight = track.clientHeight - window.innerHeight;
+    const targetScroll = trackTop + targetProgress * trackHeight;
+
+    window.scrollTo({
+      top: targetScroll,
+      behavior: 'smooth',
+    });
   };
 
-  const getPhaseIcon = (index: number) => {
-    switch (index) {
-      case 0:
-        return <Footprints size={18} />;
-      case 1:
-        return <Users size={18} />;
-      default:
-        return <HeartHandshake size={18} />;
-    }
-  };
+  const currentCheckpoint = JOURNEY_CHECKPOINTS[activeCheckpointIndex];
 
   return (
     <section
       id="story"
-      ref={sectionRef}
       className={styles.storyWrapper}
-      aria-label="The Walkathon Story and Vision"
+      aria-label="The Walkathon Interactive Journey Road"
     >
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <div className="section-eyebrow">
-            <Compass size={14} />
-            <span>The Journey Ahead</span>
-          </div>
-          <h2 className="section-title">From A Single Spark to 10,000 Unified Steps</h2>
-          <p className="section-lead">
-            Every monumental movement is powered by ordinary people stepping out of their routines to share a common course.
-          </p>
-        </div>
+      {prefersReducedMotion || !webGlSupported ? (
+        <JourneyFallback />
+      ) : (
+        <div ref={trackRef} className={styles.scrollTrackContainer}>
+          <div className={styles.stickyViewport}>
+            {/* 3D Daylight Connected Road & Runner Scene */}
+            <Suspense fallback={<JourneyFallback />}>
+              <Journey3DScene
+                progress={progress}
+                activeCheckpointIndex={activeCheckpointIndex}
+              />
+            </Suspense>
 
-        {/* Story Milestones Track */}
-        <div className={styles.timelineTrackContainer}>
-          <div className={styles.timelineCenterLine} aria-hidden="true" />
+            {/* Framing Vignette */}
+            <div className={styles.vignetteOverlay} aria-hidden="true" />
 
-          {EVENT_CONFIG.storyline.map((item, index) => {
-            const isReverse = index % 2 === 1;
-            return (
-              <div
-                key={item.number}
-                ref={(el) => {
-                  itemsRef.current[index] = el;
-                }}
-                className={`${styles.storyItem} ${isReverse ? styles.storyItemReverse : ''}`}
-              >
-                {/* Visual Card */}
-                <div className={styles.storyVisual}>
-                  <div className={styles.visualCard}>
-                    <div className={styles.visualGraphic} aria-hidden="true">
-                      {getVisualSvg(index)}
-                    </div>
-                    <div className={styles.visualMetric}>
-                      <span className={styles.metricValue}>{item.metricValue}</span>
-                      <span className={styles.metricLabel}>{item.metricLabel}</span>
-                    </div>
-                  </div>
+            {/* Top Floating Journey Header */}
+            <header className={styles.journeyHeader}>
+              <div className={styles.headerTextGroup}>
+                <div className={styles.journeyEyebrow}>
+                  <Compass size={14} />
+                  <span>The Walkathon Road • Live Interactive Course</span>
+                </div>
+                <h2 className={styles.journeyTitle}>
+                  From A Single Spark to 10,000 Unified Steps
+                </h2>
+              </div>
+
+              {/* Progress Timeline HUD */}
+              <div className={styles.journeyHud} role="navigation" aria-label="Course checkpoints">
+                <div className={styles.hudTrack}>
+                  {JOURNEY_CHECKPOINTS.map((cp, idx) => (
+                    <button
+                      key={cp.id}
+                      type="button"
+                      className={`${styles.hudStepBtn} ${
+                        idx === activeCheckpointIndex ? styles.hudStepActive : ''
+                      }`}
+                      onClick={() => handleSelectCheckpoint(idx)}
+                      aria-label={`Scroll to ${cp.tag}`}
+                    >
+                      <span>{cp.number}</span>
+                      <span>{cp.phase}</span>
+                    </button>
+                  ))}
                 </div>
 
-                {/* Content */}
-                <div className={styles.storyContent}>
-                  <div className={styles.storyPhaseBadge}>
-                    <span className={styles.stepNumber}>{item.number}</span>
-                    <span className={styles.phaseTitle}>
-                      {getPhaseIcon(index)}
-                      <span style={{ marginLeft: '0.4rem' }}>{item.phase}</span>
-                    </span>
-                  </div>
-
-                  <h3 className={styles.storyHeadline}>{item.headline}</h3>
-                  <p className={styles.storyLead}>{item.lead}</p>
-                  <p className={styles.storyDescription}>{item.description}</p>
+                <div className={styles.hudProgressBar}>
+                  <div
+                    className={styles.hudProgressFill}
+                    style={{ width: `${Math.round(progress * 100)}%` }}
+                  />
                 </div>
               </div>
-            );
-          })}
+            </header>
+
+            {/* Floating Checkpoint Content Card Stage */}
+            <div className={styles.panelStage}>
+              <div className={styles.panelCardWrapper}>
+                <CheckpointPanel
+                  checkpoint={currentCheckpoint}
+                  totalCheckpoints={JOURNEY_CHECKPOINTS.length}
+                  currentIndex={activeCheckpointIndex}
+                  onSelectCheckpoint={handleSelectCheckpoint}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };
