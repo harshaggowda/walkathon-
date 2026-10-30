@@ -59,7 +59,7 @@
 
 .emailInput {
   flex: 1;
-  background: rgba(8, 12, 22, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-full);
   padding: 0.95rem 1.5rem;
@@ -105,7 +105,7 @@
 
 /* Demo Simulation Result Box */
 .demoResultBox {
-  background: rgba(13, 21, 39, 0.85);
+  background: rgba(245, 248, 242, 0.95);
   border: 1px solid var(--accent-gold);
   border-radius: var(--radius-md);
   padding: 1.75rem;

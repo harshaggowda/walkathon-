@@ -42,19 +42,7 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: radial-gradient(
-      ellipse at 50% 55%,
-      rgba(7, 11, 20, 0.1) 0%,
-      rgba(7, 11, 20, 0.6) 65%,
-      rgba(7, 11, 20, 0.95) 100%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(7, 11, 20, 0.75) 0%,
-      transparent 22%,
-      transparent 70%,
-      rgba(7, 11, 20, 0.98) 100%
-    );
+  background: linear-gradient(180deg, rgba(245, 248, 242, 0.32), rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.72));
   pointer-events: none;
 }
 
@@ -73,8 +61,8 @@
   gap: 0.65rem;
   padding: 0.5rem 1.25rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 87, 34, 0.14);
-  border: 1px solid rgba(255, 87, 34, 0.38);
+  background: rgba(22, 134, 83, 0.08);
+  border: 1px solid rgba(22, 134, 83, 0.2);
   color: var(--accent-orange-light);
   font-family: var(--font-mono);
   font-size: 0.85rem;
@@ -82,7 +70,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 1.6rem;
-  box-shadow: 0 4px 20px rgba(255, 87, 34, 0.16);
+  box-shadow: 0 4px 20px rgba(22, 134, 83, 0.08);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -120,11 +108,11 @@
   color: var(--text-ivory);
   text-transform: uppercase;
   margin-bottom: 1.4rem;
-  text-shadow: 0 4px 32px rgba(0, 0, 0, 0.85), 0 2px 12px rgba(0, 0, 0, 0.95);
+  text-shadow: 0 2px 24px rgba(255, 255, 255, 0.8);
 }
 
 .headlineGradient {
-  background: linear-gradient(135deg, #ffffff 15%, #f5a623 65%, #ff5722 100%);
+  background: linear-gradient(135deg, #174d35 5%, #168653 58%, #75b947 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -138,7 +126,7 @@
   max-width: 760px;
   margin: 0 auto 2.25rem auto;
   line-height: 1.55;
-  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 2px 18px rgba(255, 255, 255, 0.85);
 }
 
 .heroSupporting strong {
@@ -168,13 +156,13 @@
   gap: 1.5rem;
   max-width: 840px;
   margin: 0 auto;
-  background: rgba(12, 19, 36, 0.75);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(23, 77, 53, 0.12);
   border-radius: var(--radius-lg);
   padding: 1.25rem 2rem;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  box-shadow: 0 12px 36px rgba(23, 77, 53, 0.1), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
 
 .statItem {
@@ -192,7 +180,7 @@
   top: 15%;
   height: 70%;
   width: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(23, 77, 53, 0.14);
 }
 
 .statValue {
@@ -240,7 +228,7 @@
 .scrollTrack {
   width: 20px;
   height: 32px;
-  border: 2px solid rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(23, 77, 53, 0.3);
   border-radius: var(--radius-full);
   display: flex;
   justify-content: center;

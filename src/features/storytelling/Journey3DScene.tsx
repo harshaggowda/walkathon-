@@ -41,11 +41,11 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     // 1. Scene & Bright Outdoor Daylight Atmosphere
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.background = new THREE.Color(0xdbeafe); // Warm daylight sky blue
-    scene.fog = new THREE.FogExp2(0xdbeafe, 0.016);
+    scene.background = new THREE.Color(0xdcebd5);
+    scene.fog = new THREE.FogExp2(0xdcebd5, 0.012);
 
     // 2. Camera: Elevated three-quarter sports broadcast angle
-    const initialFov = window.innerWidth < 768 ? 50 : 48;
+    const initialFov = window.innerWidth < 768 ? 55 : 48;
     const camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.1, 800);
     cameraRef.current = camera;
     camera.position.set(4, 5, 24);
@@ -58,7 +58,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     });
     rendererRef.current = renderer;
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     renderer.shadowMap.enabled = true;
@@ -66,10 +66,10 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     container.appendChild(renderer.domElement);
 
     // 4. Warm Outdoor Lighting Scheme
-    const skyLight = new THREE.AmbientLight(0xbae6fd, 1.4); // Sky fill
+    const skyLight = new THREE.HemisphereLight(0xf4f8e9, 0x526b43, 1.8);
     scene.add(skyLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffedd5, 2.8); // Golden morning sun
+    const sunLight = new THREE.DirectionalLight(0xffedcf, 2.3);
     sunLight.position.set(15, 28, 12);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 1024;
@@ -79,7 +79,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     sunLight.shadow.bias = -0.001;
     scene.add(sunLight);
 
-    const fillLight = new THREE.DirectionalLight(0xfef08a, 1.2); // Warm road fill
+    const fillLight = new THREE.DirectionalLight(0xd8edc4, 0.8);
     fillLight.position.set(-14, 16, -10);
     scene.add(fillLight);
 
@@ -169,27 +169,23 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       const isDesktop = winW >= 1024;
       const isMobile = winW < 768;
 
-      const camOffsetX = isDesktop
-        ? 2.2 + currentMouseX * 0.4
-        : 0.25;
-      const camOffsetY = isMobile
-        ? 3.8
-        : (isDesktop ? 3.4 - currentMouseY * 0.3 : 3.6);
-      const camOffsetZ = isMobile ? 6.2 : 5.8;
-
-      const targetCamPos = new THREE.Vector3(
-        position.x + camOffsetX,
-        position.y + camOffsetY,
-        position.z + camOffsetZ
-      );
+      const worldUp = new THREE.Vector3(0, 1, 0);
+      const forward = new THREE.Vector3(tangent.x, 0, tangent.z).normalize();
+      const right = new THREE.Vector3().crossVectors(forward, worldUp).normalize();
+      const followDistance = isMobile ? 8.2 : (isDesktop ? 9.4 : 8.8);
+      const lateralOffset = isDesktop ? 1.2 + currentMouseX * 0.25 : 0;
+      const targetCamPos = position.clone()
+        .addScaledVector(forward, -followDistance)
+        .addScaledVector(right, lateralOffset)
+        .add(new THREE.Vector3(0, isMobile ? 4.8 : 4.4 - currentMouseY * 0.2, 0));
 
       camera.position.lerp(targetCamPos, Math.min(delta * 4, 0.2));
 
       // Camera look-at target: slightly ahead of runner down the road
       targetLookAt.set(
-        position.x + tangent.x * 6 + (isDesktop ? -0.8 : 0),
-        position.y + 1.4,
-        position.z + tangent.z * 6
+        position.x + tangent.x * (isMobile ? 10 : 12),
+        position.y + 1.55,
+        position.z + tangent.z * (isMobile ? 10 : 12)
       );
 
       currentLookAt.lerp(targetLookAt, Math.min(delta * 4, 0.2));

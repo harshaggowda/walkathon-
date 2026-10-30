@@ -62,34 +62,11 @@ export class JourneyRunner {
         },
         undefined,
         (err) => {
-          console.warn('[JourneyRunner] Fallback to procedural runner', err);
-          this.buildProceduralRunner();
-          this.isLoaded = true;
-          if (onLoaded) onLoaded();
+          console.error('[JourneyRunner] Runner asset could not be loaded.', err);
           resolve();
         }
       );
     });
-  }
-
-  private buildProceduralRunner(): void {
-    const fallback = new THREE.Group();
-    // Athletic Runner Silhouette
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 });
-    const accentMat = new THREE.MeshStandardMaterial({ color: 0xff5722, roughness: 0.2 });
-
-    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 0.75, 12), bodyMat);
-    torso.position.y = 1.1;
-    torso.castShadow = true;
-    fallback.add(torso);
-
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 16), accentMat);
-    head.position.y = 1.62;
-    head.castShadow = true;
-    fallback.add(head);
-
-    this.group.add(fallback);
-    this.modelRoot = fallback;
   }
 
   public update(progress: number, delta: number, curve: THREE.CatmullRomCurve3): {

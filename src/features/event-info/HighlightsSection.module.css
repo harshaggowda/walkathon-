@@ -95,7 +95,7 @@
 }
 
 .highlightItemCard {
-  background: rgba(16, 26, 49, 0.45);
+  background: rgba(23, 77, 53, 0.035);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);

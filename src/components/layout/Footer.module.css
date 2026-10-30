@@ -1,5 +1,5 @@
 .footer {
-  background: var(--bg-darkest);
+  background: #eef4e9;
   border-top: 1px solid var(--border-subtle);
   padding: 5rem 0 2.5rem 0;
   position: relative;
@@ -29,7 +29,7 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--accent-orange) 0%, #FF8A65 100%);
+  background: linear-gradient(135deg, #174d35 0%, #168653 100%);
   display: flex;
   align-items: center;
   justify-content: center;

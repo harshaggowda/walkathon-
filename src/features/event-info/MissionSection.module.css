@@ -113,7 +113,7 @@
   aspect-ratio: 4 / 4.8;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: radial-gradient(circle at 70% 30%, #172648 0%, #090E1B 80%);
+  background: radial-gradient(circle at 70% 30%, #e8f2df 0%, #f5f8f2 80%);
   border: 1px solid var(--border-medium);
   box-shadow: var(--shadow-lg);
   display: flex;
@@ -147,7 +147,7 @@
 .compositionFooter {
   position: relative;
   z-index: 2;
-  background: rgba(8, 12, 22, 0.75);
+  background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);

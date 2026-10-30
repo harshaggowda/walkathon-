@@ -48,7 +48,7 @@ export class JourneyRoad {
     // Fresh green park grass terrain with gentle rolling contours
     const groundGeo = new THREE.PlaneGeometry(160, 240, 32, 32);
     const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x22c55e, // Fresh park green
+      color: 0x75a95b,
       roughness: 0.85,
       metalness: 0.05,
     });
@@ -103,7 +103,7 @@ export class JourneyRoad {
 
     // Warm civic boulevard asphalt
     const material = new THREE.MeshStandardMaterial({
-      color: 0x1e293b, // Slate asphalt
+      color: 0x454d49,
       roughness: 0.7,
       metalness: 0.15,
     });
@@ -135,24 +135,18 @@ export class JourneyRoad {
 
     const curbGeo = (c: THREE.CatmullRomCurve3) => new THREE.TubeGeometry(c, 120, 0.08, 6, false);
 
-    // Vibrant energetic orange curb on left
-    const orangeCurbMat = new THREE.MeshStandardMaterial({
-      color: 0xff5722,
-      emissive: 0xff5722,
-      emissiveIntensity: 0.8,
-      roughness: 0.3,
+    const leftCurbMat = new THREE.MeshStandardMaterial({
+      color: 0xced8c8,
+      roughness: 0.72,
     });
 
-    // Golden curb on right
-    const goldCurbMat = new THREE.MeshStandardMaterial({
-      color: 0xf5a623,
-      emissive: 0xf5a623,
-      emissiveIntensity: 0.8,
-      roughness: 0.3,
+    const rightCurbMat = new THREE.MeshStandardMaterial({
+      color: 0xe0e5d8,
+      roughness: 0.72,
     });
 
-    this.leftCurv = new THREE.Mesh(curbGeo(leftCurve), orangeCurbMat);
-    this.rightCurv = new THREE.Mesh(curbGeo(rightCurve), goldCurbMat);
+    this.leftCurv = new THREE.Mesh(curbGeo(leftCurve), leftCurbMat);
+    this.rightCurv = new THREE.Mesh(curbGeo(rightCurve), rightCurbMat);
 
     this.group.add(this.leftCurv);
     this.group.add(this.rightCurv);
@@ -162,10 +156,8 @@ export class JourneyRoad {
     const count = 50;
     const dashGeo = new THREE.BoxGeometry(0.14, 0.02, 0.8);
     const dashMat = new THREE.MeshStandardMaterial({
-      color: 0xfef08a, // Bright civic road yellow
-      emissive: 0xf59e0b,
-      emissiveIntensity: 0.5,
-      roughness: 0.2,
+      color: 0xe9e8cf,
+      roughness: 0.75,
     });
 
     this.centerDashes = new THREE.InstancedMesh(dashGeo, dashMat, count);
@@ -216,9 +208,9 @@ export class JourneyRoad {
       const archHeight = 4.4;
       const pillarGeo = new THREE.BoxGeometry(0.35, archHeight, 0.4);
       const pillarMat = new THREE.MeshStandardMaterial({
-        color: 0x0f172a,
-        roughness: 0.4,
-        metalness: 0.6,
+        color: 0x31583d,
+        roughness: 0.68,
+        metalness: 0.02,
       });
 
       // Left Pillar
@@ -244,8 +236,8 @@ export class JourneyRoad {
       const neonMat = new THREE.MeshStandardMaterial({
         color: color,
         emissive: color,
-        emissiveIntensity: 1.5,
-        roughness: 0.1,
+        emissiveIntensity: 0.22,
+        roughness: 0.42,
       });
       const neonStrip = new THREE.Mesh(neonGeo, neonMat);
       neonStrip.position.set(0, archHeight - 0.15, 0.26);
@@ -270,15 +262,15 @@ export class JourneyRoad {
     grandArch.lookAt(finishPt.x + finishTan.x, finishPt.y, finishPt.z + finishTan.z);
 
     const gPillarMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      metalness: 0.8,
-      roughness: 0.2,
+      color: 0x31583d,
+      metalness: 0.02,
+      roughness: 0.68,
     });
     const gGoldMat = new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      emissive: 0xf59e0b,
-      emissiveIntensity: 2.0,
-      roughness: 0.1,
+      color: 0xb4d77b,
+      emissive: 0x75b947,
+      emissiveIntensity: 0.28,
+      roughness: 0.38,
     });
 
     // Twin monumental gold pillars
@@ -300,12 +292,9 @@ export class JourneyRoad {
   }
 
   private buildParkScenery(): void {
-    // Stylized low-poly trees and festive banner flagpoles along the parkway
-    const treeTrunkGeo = new THREE.CylinderGeometry(0.12, 0.18, 2.2, 6);
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
-
-    const foliageColors = [0x15803d, 0x16a34a, 0x22c55e, 0x10b981];
-    const flagColors = [0xff5722, 0xf5a623, 0x0284c7, 0x10b981];
+    const treeTrunkGeo = new THREE.CylinderGeometry(0.12, 0.2, 2.8, 9);
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x725b40, roughness: 0.95 });
+    const foliageColors = [0x356d43, 0x477d49, 0x5b8c4c, 0x2f6241];
 
     const treeSteps = 28;
     for (let i = 0; i < treeSteps; i++) {
@@ -318,7 +307,7 @@ export class JourneyRoad {
       // Trees on both sides (offset 4.5m to 8m from road center)
       [-5.2, 5.2].forEach((sideOffset, sideIdx) => {
         const treeGroup = new THREE.Group();
-        const treePos = pt.clone().addScaledVector(binormal, sideOffset * (0.9 + Math.random() * 0.4));
+        const treePos = pt.clone().addScaledVector(binormal, sideOffset * (0.9 + ((i * 13 + sideIdx * 7) % 10) / 30));
         treeGroup.position.set(treePos.x, 0, treePos.z);
 
         const trunk = new THREE.Mesh(treeTrunkGeo, trunkMat);
@@ -327,43 +316,21 @@ export class JourneyRoad {
         treeGroup.add(trunk);
 
         const folColor = foliageColors[(i + sideIdx) % foliageColors.length];
-        const folMat = new THREE.MeshStandardMaterial({ color: folColor, roughness: 0.8 });
-        const canopy = new THREE.Mesh(new THREE.ConeGeometry(1.2 + Math.random() * 0.4, 3.2, 7), folMat);
-        canopy.position.y = 3.2;
-        canopy.castShadow = true;
+        const folMat = new THREE.MeshStandardMaterial({ color: folColor, roughness: 0.92 });
+        const canopy = new THREE.Group();
+        const canopySize = 1.35 + ((i * 5 + sideIdx * 3) % 5) * 0.1;
+        for (const [x, y, z, scale] of [[0, 3.25, 0, 1], [-0.62, 3.05, 0.12, 0.76], [0.58, 3.1, -0.1, 0.82]] as const) {
+          const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(canopySize * scale, 2), folMat);
+          crown.position.set(x, y, z);
+          crown.scale.set(1, 0.86, 1);
+          crown.castShadow = true;
+          canopy.add(crown);
+        }
         treeGroup.add(canopy);
 
         this.sceneryGroup.add(treeGroup);
       });
 
-      // Cheerful roadside banner flagpoles every 4th step
-      if (i % 3 === 0) {
-        const flagGroup = new THREE.Group();
-        const flagPt = pt.clone().addScaledVector(binormal, i % 2 === 0 ? 3.2 : -3.2);
-        flagGroup.position.set(flagPt.x, 0, flagPt.z);
-
-        const pole = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.04, 0.05, 3.8, 6),
-          new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7 })
-        );
-        pole.position.y = 1.9;
-        flagGroup.add(pole);
-
-        const fColor = flagColors[i % flagColors.length];
-        const flagCloth = new THREE.Mesh(
-          new THREE.PlaneGeometry(0.7, 1.2),
-          new THREE.MeshStandardMaterial({
-            color: fColor,
-            side: THREE.DoubleSide,
-            roughness: 0.5,
-          })
-        );
-        flagCloth.position.set(0.35, 3.1, 0);
-        flagGroup.add(flagCloth);
-        this.bannerFlags.push(flagCloth);
-
-        this.sceneryGroup.add(flagGroup);
-      }
     }
   }
 

@@ -22,7 +22,7 @@
 
 .accordionItemOpen {
   border-color: var(--border-medium);
-  background: rgba(19, 31, 58, 0.7);
+  background: #f5f8f2;
 }
 
 .accordionHeader {

@@ -25,10 +25,7 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   overflow-x: hidden;
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 87, 34, 0.08), transparent 70%),
-    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(245, 166, 35, 0.04), transparent 60%);
-  background-attachment: fixed;
+  background-image: radial-gradient(ellipse 70% 45% at 50% -18%, rgba(117, 185, 71, 0.11), transparent 72%);
 }
 
 /* Typography Scale */
@@ -36,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1.15;
-  color: var(--text-ivory);
+  color: var(--text-dark);
   letter-spacing: -0.02em;
 }
 
@@ -112,8 +109,8 @@ button, input, textarea, select {
   margin-bottom: 1rem;
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
-  background: rgba(255, 87, 34, 0.1);
-  border: 1px solid rgba(255, 87, 34, 0.25);
+  background: rgba(22, 134, 83, 0.08);
+  border: 1px solid rgba(22, 134, 83, 0.18);
 }
 
 .section-title {
@@ -167,15 +164,15 @@ button, input, textarea, select {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-orange) 0%, #FF7043 100%);
+  background: linear-gradient(135deg, #168653 0%, #75B947 100%);
   color: #FFFFFF;
-  box-shadow: 0 4px 18px rgba(255, 87, 34, 0.38);
+  box-shadow: 0 4px 18px rgba(22, 134, 83, 0.22);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #FF7043 0%, #FF8A65 100%);
+  background: linear-gradient(135deg, #1b9b61 0%, #82c354 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(255, 87, 34, 0.52);
+  box-shadow: 0 6px 24px rgba(22, 134, 83, 0.28);
 }
 
 .btn-primary:active {
@@ -184,9 +181,9 @@ button, input, textarea, select {
 
 .btn-secondary {
   background: rgba(255, 255, 255, 0.06);
-  color: var(--text-ivory);
+  color: var(--text-dark);
   border: 1px solid var(--border-medium);
-  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .btn-secondary:hover {

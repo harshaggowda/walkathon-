@@ -38,8 +38,8 @@ export const JOURNEY_CHECKPOINTS: JourneyCheckpoint[] = [
       'The walkathon is built on one simple premise: you do not need to be an elite athlete to transform your life. It starts with lacing up your shoes, stepping off the porch, and joining hands with neighbors taking that same courage-filled first stride.',
     metricValue: '1 Step',
     metricLabel: 'Your Beginning',
-    themeColor: '#FF5722', // Energetic Orange
-    badgeBg: 'rgba(255, 87, 34, 0.12)',
+    themeColor: '#168653',
+    badgeBg: 'rgba(22, 134, 83, 0.10)',
     iconName: 'Footprints',
     illustrationType: 'step',
   },
@@ -55,8 +55,8 @@ export const JOURNEY_CHECKPOINTS: JourneyCheckpoint[] = [
       'Walkathons erase barriers. Along the wide civic corridor, parents guide strollers, schoolchildren pace alongside grandparents, local fitness clubs cheer first-timers, and colleagues share smiles under the morning sun.',
     metricValue: '10,000+',
     metricLabel: 'Community Walkers',
-    themeColor: '#0284C7', // Vibrant Sky Blue
-    badgeBg: 'rgba(2, 132, 199, 0.12)',
+    themeColor: '#75B947',
+    badgeBg: 'rgba(117, 185, 71, 0.13)',
     iconName: 'Users',
     illustrationType: 'community',
   },
@@ -72,8 +72,8 @@ export const JOURNEY_CHECKPOINTS: JourneyCheckpoint[] = [
       'A daily 30-minute brisk walk enhances cardiovascular wellness, clears mental fog, and boosts emotional resilience. Our 3K Harmony, 5K Fitness, and 10K Endurance courses provide a safe, supported threshold for every stamina level.',
     metricValue: '3K • 5K • 10K',
     metricLabel: 'Inclusive Courses',
-    themeColor: '#10B981', // Fresh Vitality Green
-    badgeBg: 'rgba(16, 185, 129, 0.12)',
+    themeColor: '#174D35',
+    badgeBg: 'rgba(23, 77, 53, 0.09)',
     iconName: 'Activity',
     illustrationType: 'movement',
   },
@@ -89,8 +89,8 @@ export const JOURNEY_CHECKPOINTS: JourneyCheckpoint[] = [
       'The finish line welcomes every finisher with celebration, commemorative medals, hydration, and collective cheer. What begins on the January pavement transforms into enduring friendships and lifelong fitness habits.',
     metricValue: 'FINISH',
     metricLabel: 'Shared Victory',
-    themeColor: '#F59E0B', // Golden Amber
-    badgeBg: 'rgba(245, 158, 11, 0.14)',
+    themeColor: '#A6C95F',
+    badgeBg: 'rgba(198, 232, 107, 0.2)',
     iconName: 'Award',
     illustrationType: 'finish',
     cta: {

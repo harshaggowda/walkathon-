@@ -76,46 +76,11 @@ export class CharacterController {
         },
         undefined,
         (error) => {
-          console.warn('[CharacterController] Failed to load GLB model. Using procedural fallback.', error);
-          this.createProceduralFallback();
-          this.isLoaded = true;
-          if (onLoadCallback) onLoadCallback();
+          console.error('[CharacterController] Runner asset could not be loaded.', error);
           resolve();
         }
       );
     });
-  }
-
-  /**
-   * Procedural silhouette fallback if WebGL network load fails
-   */
-  private createProceduralFallback(): void {
-    const fallbackGroup = new THREE.Group();
-
-    // Torso
-    const torsoGeo = new THREE.CylinderGeometry(0.24, 0.2, 0.75, 12);
-    const suitMat = new THREE.MeshStandardMaterial({
-      color: 0x0f1c3f,
-      roughness: 0.3,
-      metalness: 0.5,
-    });
-    const torso = new THREE.Mesh(torsoGeo, suitMat);
-    torso.position.y = 1.15;
-    fallbackGroup.add(torso);
-
-    // Head
-    const headGeo = new THREE.SphereGeometry(0.14, 16, 16);
-    const headMat = new THREE.MeshStandardMaterial({
-      color: 0xff5722,
-      roughness: 0.2,
-      emissive: 0x331100,
-    });
-    const head = new THREE.Mesh(headGeo, headMat);
-    head.position.y = 1.68;
-    fallbackGroup.add(head);
-
-    this.group.add(fallbackGroup);
-    this.modelRoot = fallbackGroup;
   }
 
   public update(state: CharacterUpdateState, pathCurve: THREE.CatmullRomCurve3): {

@@ -1,16 +1,7 @@
 /* Transition from dramatic dark hero into bright, hopeful outdoor journey */
 .storyWrapper {
   position: relative;
-  background: linear-gradient(
-    180deg,
-    var(--bg-primary) 0%,
-    #0e1b38 4%,
-    #1e3a8a 10%,
-    #bfdbfe 22%,
-    #dbeafe 35%,
-    #eff6ff 70%,
-    #f8fafc 100%
-  );
+  background: linear-gradient(180deg, #f5f8f2 0%, #ffffff 24%, #eef5e8 100%);
   overflow: visible;
 }
 
@@ -91,12 +82,12 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #0369a1;
+  color: #174d35;
   background: rgba(255, 255, 255, 0.9);
   padding: 0.35rem 0.85rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(2, 132, 199, 0.25);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(23, 77, 53, 0.14);
+  box-shadow: 0 4px 12px rgba(23, 77, 53, 0.08);
   margin-bottom: 0.4rem;
 }
 
@@ -104,7 +95,7 @@
   font-family: var(--font-display);
   font-size: clamp(1.4rem, 2.2vw, 2.1rem);
   font-weight: 800;
-  color: #0f172a;
+  color: #174d35;
   letter-spacing: -0.03em;
   line-height: 1.15;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
@@ -143,17 +134,17 @@
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 700;
-  color: #64748b;
+  color: #526459;
   transition: all var(--transition-fast);
 }
 
 .hudStepBtn:hover {
-  color: #0f172a;
-  background: rgba(15, 23, 42, 0.06);
+  color: #174d35;
+  background: rgba(23, 77, 53, 0.06);
 }
 
 .hudStepActive {
-  background: #0f172a !important;
+  background: #174d35 !important;
   color: #ffffff !important;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
 }
@@ -169,7 +160,7 @@
 
 .hudProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #ff5722, #f5a623);
+  background: linear-gradient(90deg, #168653, #75b947, #c6e86b);
   border-radius: var(--radius-full);
   transition: width 150ms ease-out;
 }
@@ -265,7 +256,7 @@
   position: relative;
   width: 100%;
   height: 190px;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #f5f8f2 0%, #eaf2e3 100%);
   border-radius: var(--radius-md);
   border: 1px solid rgba(15, 23, 42, 0.08);
   display: flex;
@@ -320,7 +311,7 @@
   font-family: var(--font-display);
   font-size: clamp(1.45rem, 2.2vw, 1.9rem);
   font-weight: 800;
-  color: #0f172a;
+  color: #174d35;
   letter-spacing: -0.025em;
   line-height: 1.2;
 }
@@ -387,8 +378,8 @@
 }
 
 .roadmapNodeActive {
-  border-color: #ff5722 !important;
-  box-shadow: 0 8px 24px rgba(255, 87, 34, 0.16);
+  border-color: #168653 !important;
+  box-shadow: 0 8px 24px rgba(22, 134, 83, 0.14);
 }
 
 .nodeIconCircle {
