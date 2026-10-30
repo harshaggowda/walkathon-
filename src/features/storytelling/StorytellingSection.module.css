@@ -25,6 +25,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100dvh;
   width: 100%;
   overflow: hidden;
   display: flex;
@@ -460,32 +461,122 @@
   gap: 0.85rem;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 960px) {
+/* ==========================================================================
+   Responsive Architecture: Dedicated compositions for Desktop, Tablet, & Mobile
+   ========================================================================== */
+
+/* Tablet (768px to 1023px) - Portrait & Default */
+@media (min-width: 768px) and (max-width: 1023px) {
   .journeyHeader {
-    flex-direction: column;
-    align-items: flex-start;
     top: 1rem;
-    left: 1.25rem;
-    right: 1.25rem;
-  }
-
-  .panelStage {
-    padding: 7rem 1.25rem 1.5rem 1.25rem;
-    align-items: flex-end;
-  }
-
-  .panelCardWrapper {
-    max-width: 100%;
-  }
-
-  .panelCard {
-    padding: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
     gap: 1rem;
   }
 
+  .headerTextGroup {
+    max-width: 52%;
+  }
+
+  .journeyEyebrow {
+    font-size: 0.725rem;
+    padding: 0.28rem 0.75rem;
+  }
+
+  .journeyTitle {
+    font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  }
+
+  .journeyHud {
+    padding: 0.35rem 0.85rem;
+    gap: 0.65rem;
+  }
+
+  .hudStepBtn {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .hudProgressBar {
+    width: 70px;
+  }
+
+  /* Dedicated 3D Scene Area at top (~46vh) */
+  .canvasContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: 46vh;
+    height: 46dvh;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .vignetteOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: 46vh;
+    height: 46dvh;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Dedicated Checkpoint Mission Card Stage below scene (~54vh) */
+  .panelStage {
+    position: absolute;
+    top: 46vh;
+    top: 46dvh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 54vh;
+    height: 54dvh;
+    z-index: 3;
+    padding: 0.75rem 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .panelCardWrapper {
+    width: 100%;
+    max-width: 580px;
+    margin: 0 auto;
+    pointer-events: auto;
+  }
+
+  .panelCard {
+    padding: 1.5rem 1.75rem;
+    border-radius: 20px;
+    gap: 0.85rem;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
   .panelArtworkWrapper {
-    height: 140px;
+    height: 110px;
+  }
+
+  .panelHeadline {
+    font-size: 1.4rem;
+  }
+
+  .panelLead {
+    font-size: 0.95rem;
+  }
+
+  .panelDescription {
+    font-size: 0.875rem;
+    line-height: 1.55;
   }
 
   .fallbackRoadmapTrack {
@@ -494,15 +585,337 @@
 
   .fallbackCardGrid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
 
-@media (max-width: 640px) {
+/* Tablet (768px to 1023px) - Landscape Orientation: Side-by-side with Dedicated Areas */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+  .journeyHeader {
+    top: 0.85rem;
+    left: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .headerTextGroup {
+    max-width: 48%;
+  }
+
+  .journeyTitle {
+    font-size: 1.15rem;
+  }
+
+  /* 3D Scene in dedicated right 56% visual space */
+  .canvasContainer {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: 56%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .vignetteOverlay {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: 56%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  /* Mission card in dedicated left 44% area */
+  .panelStage {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 44%;
+    height: 100%;
+    z-index: 3;
+    padding: 4.8rem 1rem 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .panelCardWrapper {
+    width: 100%;
+    max-width: 410px;
+  }
+
+  .panelCard {
+    padding: 1.15rem 1.25rem;
+    gap: 0.65rem;
+    max-height: calc(100vh - 5.5rem);
+    max-height: calc(100dvh - 5.5rem);
+    overflow-y: auto;
+  }
+
+  .panelArtworkWrapper {
+    height: 80px;
+  }
+
+  .panelHeadline {
+    font-size: 1.2rem;
+  }
+
+  .panelLead {
+    font-size: 0.875rem;
+  }
+
+  .panelDescription {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile (Below 768px) - Vertically Organized Mobile-First Composition */
+@media (max-width: 767px) {
+  /* Dedicated 3D Scene at Top (43vh / 43dvh) */
+  .canvasContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: 43vh;
+    height: 43dvh;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .vignetteOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: 43vh;
+    height: 43dvh;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(14, 27, 56, 0.25) 0%,
+      transparent 25%,
+      transparent 75%,
+      rgba(240, 249, 255, 0.7) 100%
+    );
+  }
+
+  /* Compact Floating Header within the top sky area */
+  .journeyHeader {
+    top: 0.65rem;
+    left: 0.85rem;
+    right: 0.85rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .headerTextGroup {
+    max-width: 100%;
+  }
+
+  .journeyEyebrow {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.6rem;
+    margin-bottom: 0.15rem;
+    gap: 0.35rem;
+  }
+
+  .journeyTitle {
+    font-size: clamp(0.95rem, 3.8vw, 1.15rem);
+    line-height: 1.15;
+  }
+
   .journeyHud {
     display: none;
   }
 
+  /* Dedicated Checkpoint Mission Card Stage below 3D scene (57vh / 57dvh) */
+  .panelStage {
+    position: absolute;
+    top: 43vh;
+    top: 43dvh;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 57vh;
+    height: 57dvh;
+    z-index: 3;
+    padding: 0.4rem 0.85rem 0.85rem 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .panelCardWrapper {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    pointer-events: auto;
+  }
+
+  .panelCard {
+    padding: 1rem 1.15rem;
+    border-radius: 18px;
+    gap: 0.55rem;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .panelHeader {
+    gap: 0.5rem;
+  }
+
+  .checkpointBadge {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.6rem;
+    gap: 0.35rem;
+  }
+
+  .stepDots {
+    gap: 0.35rem;
+  }
+
+  .stepDot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .stepDotActive {
+    transform: scale(1.25);
+  }
+
+  .panelArtworkWrapper {
+    height: 68px;
+    border-radius: var(--radius-sm);
+  }
+
+  .artworkMetricBadge {
+    bottom: 0.4rem;
+    right: 0.5rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .metricVal {
+    font-size: 1.05rem;
+  }
+
+  .metricLbl {
+    font-size: 0.6rem;
+    margin-top: 0.05rem;
+  }
+
+  .panelBody {
+    gap: 0.35rem;
+  }
+
+  .panelHeadline {
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+    line-height: 1.2;
+  }
+
+  .panelLead {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .panelDescription {
+    font-size: 0.785rem;
+    line-height: 1.45;
+  }
+
+  .panelActionArea {
+    gap: 0.35rem;
+    padding-top: 0.2rem;
+  }
+
+  .panelActionArea .btn {
+    padding: 0.55rem 1.15rem;
+    font-size: 0.85rem;
+  }
+
+  .ctaHint {
+    font-size: 0.72rem;
+    gap: 0.35rem;
+  }
+
+  /* Fallback Roadmap */
+  .fallbackRoadmapTrack {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+
+  .fallbackCardGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .fallbackCard {
+    padding: 1.25rem;
+  }
+}
+
+/* Mobile Landscape (width < 768px and orientation: landscape) */
+@media (max-width: 767px) and (orientation: landscape) {
+  .canvasContainer {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: 55%;
+    height: 100%;
+  }
+
+  .vignetteOverlay {
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: 55%;
+    height: 100%;
+  }
+
+  .panelStage {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 45%;
+    height: 100%;
+    padding: 2.8rem 0.65rem 0.65rem 0.85rem;
+  }
+
+  .panelCard {
+    padding: 0.75rem;
+    gap: 0.35rem;
+    max-height: calc(100vh - 3.2rem);
+    max-height: calc(100dvh - 3.2rem);
+  }
+
   .panelArtworkWrapper {
     display: none;
+  }
+
+  .journeyTitle {
+    font-size: 0.95rem;
+  }
+}
+
+/* Extra small mobile */
+@media (max-width: 480px) {
+  .fallbackRoadmapTrack {
+    grid-template-columns: 1fr;
   }
 }

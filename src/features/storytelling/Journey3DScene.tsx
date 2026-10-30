@@ -45,7 +45,8 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     scene.fog = new THREE.FogExp2(0xdbeafe, 0.016);
 
     // 2. Camera: Elevated three-quarter sports broadcast angle
-    const camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 800);
+    const initialFov = window.innerWidth < 768 ? 50 : 48;
+    const camera = new THREE.PerspectiveCamera(initialFov, width / height, 0.1, 800);
     cameraRef.current = camera;
     camera.position.set(4, 5, 24);
 
@@ -104,17 +105,35 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    // Resize handling
+    // Resize handling: sync camera and renderer to container dimensions across breakpoints
     const handleResize = () => {
-      if (!container) return;
+      if (!container || !rendererRef.current || !cameraRef.current) return;
       const newW = container.clientWidth || window.innerWidth;
       const newH = container.clientHeight || window.innerHeight;
-      camera.aspect = newW / newH;
-      camera.fov = newW < 768 ? 58 : 48;
-      camera.updateProjectionMatrix();
-      renderer.setSize(newW, newH);
+      if (newW === 0 || newH === 0) return;
+
+      const cam = cameraRef.current;
+      const rnd = rendererRef.current;
+
+      cam.aspect = newW / newH;
+      if (window.innerWidth < 768) {
+        cam.fov = 50;
+      } else if (window.innerWidth < 1024) {
+        cam.fov = 48;
+      } else {
+        cam.fov = 48;
+      }
+      cam.updateProjectionMatrix();
+      rnd.setSize(newW, newH);
     };
     window.addEventListener('resize', handleResize);
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(() => handleResize())
+      : null;
+    if (resizeObserver && container) {
+      resizeObserver.observe(container);
+    }
 
     // 7. Render Loop
     let animationFrameId: number;
@@ -145,11 +164,18 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
 
       // Dynamic camera tracking:
       // Desktop: offset over right shoulder looking down the route and framing the left-hand story panel
-      // Mobile: elevated center follow
-      const isMobile = window.innerWidth < 768;
-      const camOffsetX = isMobile ? 0.3 : 2.2 + currentMouseX * 0.4;
-      const camOffsetY = isMobile ? 4.2 : 3.4 - currentMouseY * 0.3;
-      const camOffsetZ = isMobile ? 6.5 : 5.8;
+      // Mobile & Tablet: centered framing tailored to dedicated scene area
+      const winW = window.innerWidth;
+      const isDesktop = winW >= 1024;
+      const isMobile = winW < 768;
+
+      const camOffsetX = isDesktop
+        ? 2.2 + currentMouseX * 0.4
+        : 0.25;
+      const camOffsetY = isMobile
+        ? 3.8
+        : (isDesktop ? 3.4 - currentMouseY * 0.3 : 3.6);
+      const camOffsetZ = isMobile ? 6.2 : 5.8;
 
       const targetCamPos = new THREE.Vector3(
         position.x + camOffsetX,
@@ -161,7 +187,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
 
       // Camera look-at target: slightly ahead of runner down the road
       targetLookAt.set(
-        position.x + tangent.x * 6 + (isMobile ? 0 : -0.8),
+        position.x + tangent.x * 6 + (isDesktop ? -0.8 : 0),
         position.y + 1.4,
         position.z + tangent.z * 6
       );
@@ -178,6 +204,9 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
 
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);

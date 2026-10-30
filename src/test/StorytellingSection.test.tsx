@@ -44,4 +44,11 @@ describe('StorytellingSection (Interactive Journey Road)', () => {
     const cta = screen.getByRole('link', { name: /Register \(Google Form\)/i });
     expect(cta).toHaveAttribute('href', '#register');
   });
+
+  it('renders all checkpoint step indicators and preserves data integrity', () => {
+    render(<StorytellingSection />);
+    JOURNEY_CHECKPOINTS.forEach((cp) => {
+      expect(screen.getAllByText(new RegExp(cp.number, 'i')).length).toBeGreaterThan(0);
+    });
+  });
 });
