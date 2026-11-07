@@ -65,7 +65,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     renderer.shadowMap.type = THREE.PCFShadowMap;
     container.appendChild(renderer.domElement);
 
-    // 4. Warm Outdoor Lighting Scheme
+    // 4. Warm Outdoor Lighting Scheme — 3-point character lighting for realism
     const skyLight = new THREE.HemisphereLight(0xf4f8e9, 0x526b43, 1.8);
     scene.add(skyLight);
 
@@ -82,6 +82,15 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     const fillLight = new THREE.DirectionalLight(0xd8edc4, 0.8);
     fillLight.position.set(-14, 16, -10);
     scene.add(fillLight);
+
+    // Warm backlight rim — separates character silhouette from background
+    const rimLight = new THREE.DirectionalLight(0xffb347, 1.6);
+    rimLight.position.set(-2, 6, -18);
+    scene.add(rimLight);
+
+    // Follow spot on the character — adds cinematic presence and depth
+    const characterSpot = new THREE.PointLight(0xfff8e7, 2.2, 14);
+    scene.add(characterSpot);
 
     // 5. Build Continuous Road & Runner
     const road = new JourneyRoad();
@@ -141,6 +150,9 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     const currentLookAt = new THREE.Vector3(0, 1.5, 0);
     const targetLookAt = new THREE.Vector3(0, 1.5, 0);
 
+    // Cinematic camera breathing state
+    let cameraBreathPhase = 0;
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
@@ -158,16 +170,25 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       // Update road checkpoints and flags
       road.update(activeIdx, time);
 
+      // Update character follow spot
+      characterSpot.position.set(
+        position.x + 0.6,
+        position.y + 2.8,
+        position.z + 2.2
+      );
+
       // Smooth mouse parallax damping
       currentMouseX += (targetMouseX - currentMouseX) * 0.05;
       currentMouseY += (targetMouseY - currentMouseY) * 0.05;
 
-      // Dynamic camera tracking:
-      // Desktop: offset over right shoulder looking down the route and framing the left-hand story panel
-      // Mobile & Tablet: centered framing tailored to dedicated scene area
+      // Dynamic camera tracking with cinematic breath
       const winW = window.innerWidth;
       const isDesktop = winW >= 1024;
       const isMobile = winW < 768;
+
+      cameraBreathPhase += delta * 0.28;
+      const breathOscX = Math.sin(cameraBreathPhase * 1.2) * 0.04;
+      const breathOscY = Math.sin(cameraBreathPhase) * 0.025;
 
       const worldUp = new THREE.Vector3(0, 1, 0);
       const forward = new THREE.Vector3(tangent.x, 0, tangent.z).normalize();
@@ -176,8 +197,8 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       const lateralOffset = isDesktop ? 1.2 + currentMouseX * 0.25 : 0;
       const targetCamPos = position.clone()
         .addScaledVector(forward, -followDistance)
-        .addScaledVector(right, lateralOffset)
-        .add(new THREE.Vector3(0, isMobile ? 4.8 : 4.4 - currentMouseY * 0.2, 0));
+        .addScaledVector(right, lateralOffset + breathOscX)
+        .add(new THREE.Vector3(0, (isMobile ? 4.8 : 4.4 - currentMouseY * 0.2) + breathOscY, 0));
 
       camera.position.lerp(targetCamPos, Math.min(delta * 4, 0.2));
 
