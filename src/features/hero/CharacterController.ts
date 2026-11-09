@@ -14,25 +14,9 @@ export class CharacterController {
   public static readonly STRIDE_SPEED = 1.38; // units per second
   private baseZ: number = 0;
 
-  // Secondary organic motion bones
-  private spineBone: THREE.Object3D | null = null;
-  private headBone: THREE.Object3D | null = null;
-  private armBoneL: THREE.Object3D | null = null;
-  private armBoneR: THREE.Object3D | null = null;
-
-  // Organic motion state
-  private stridePhase: number = 0;
-  private breathPhase: number = 0;
-  private smoothedScrollV: number = 0;
-  private lastScrollProgress: number = 0;
-
   constructor() {
     this.group = new THREE.Group();
     this.group.name = 'CharacterControllerGroup';
-    this.stridePhase = 0;
-    this.breathPhase = 0;
-    this.smoothedScrollV = 0;
-    this.lastScrollProgress = 0;
   }
 
   public async load(onLoadCallback?: () => void): Promise<void> {
@@ -50,7 +34,7 @@ export class CharacterController {
           this.modelRoot.rotation.y = Math.PI; // Face forward down track
           this.modelRoot.position.set(0, 0, 0);
 
-          // Configure materials for athletic campaign aesthetic — richer PBR
+          // Configure materials for athletic campaign aesthetic
           this.modelRoot.traverse((child) => {
             if ((child as THREE.Mesh).isMesh) {
               const mesh = child as THREE.Mesh;
@@ -58,28 +42,13 @@ export class CharacterController {
               mesh.receiveShadow = true;
 
               if (mesh.material) {
-                // Organic skin/fabric PBR — softer roughness, low metalness
+                // Ensure materials respond richly to dramatic lighting
                 const mat = mesh.material as THREE.MeshStandardMaterial;
-                mat.roughness = 0.55;
-                mat.metalness = 0.05;
-                mat.envMapIntensity = 1.4;
+                mat.roughness = 0.4;
+                mat.metalness = 0.25;
+                mat.envMapIntensity = 1.2;
                 mat.needsUpdate = true;
               }
-            }
-
-            // Map secondary motion bones
-            const name = child.name.toLowerCase();
-            if (name.includes('spine') || name.includes('chest')) {
-              if (!this.spineBone) this.spineBone = child;
-            }
-            if (name.includes('head') || name.includes('neck')) {
-              if (!this.headBone) this.headBone = child;
-            }
-            if ((name.includes('arm') || name.includes('upper')) && name.includes('l')) {
-              if (!this.armBoneL) this.armBoneL = child;
-            }
-            if ((name.includes('arm') || name.includes('upper')) && name.includes('r')) {
-              if (!this.armBoneR) this.armBoneR = child;
             }
           });
 
@@ -96,7 +65,7 @@ export class CharacterController {
             this.walkAction = this.mixer.clipAction(walkClip);
             this.walkAction.setLoop(THREE.LoopRepeat, Infinity);
             this.walkAction.clampWhenFinished = false;
-            this.walkAction.timeScale = 1.0;   // driven dynamically
+            this.walkAction.timeScale = 1.08; // Crisp, brisk athletic stride
             this.walkAction.play();
           }
 
@@ -107,11 +76,46 @@ export class CharacterController {
         },
         undefined,
         (error) => {
-          console.error('[CharacterController] Runner asset could not be loaded.', error);
+          console.warn('[CharacterController] Failed to load GLB model. Using procedural fallback.', error);
+          this.createProceduralFallback();
+          this.isLoaded = true;
+          if (onLoadCallback) onLoadCallback();
           resolve();
         }
       );
     });
+  }
+
+  /**
+   * Procedural silhouette fallback if WebGL network load fails
+   */
+  private createProceduralFallback(): void {
+    const fallbackGroup = new THREE.Group();
+
+    // Torso
+    const torsoGeo = new THREE.CylinderGeometry(0.24, 0.2, 0.75, 12);
+    const suitMat = new THREE.MeshStandardMaterial({
+      color: 0x0f1c3f,
+      roughness: 0.3,
+      metalness: 0.5,
+    });
+    const torso = new THREE.Mesh(torsoGeo, suitMat);
+    torso.position.y = 1.15;
+    fallbackGroup.add(torso);
+
+    // Head
+    const headGeo = new THREE.SphereGeometry(0.14, 16, 16);
+    const headMat = new THREE.MeshStandardMaterial({
+      color: 0xff5722,
+      roughness: 0.2,
+      emissive: 0x331100,
+    });
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 1.68;
+    fallbackGroup.add(head);
+
+    this.group.add(fallbackGroup);
+    this.modelRoot = fallbackGroup;
   }
 
   public update(state: CharacterUpdateState, pathCurve: THREE.CatmullRomCurve3): {
@@ -122,66 +126,34 @@ export class CharacterController {
       this.mixer.update(state.delta);
     }
 
-    // ── Scroll velocity ───────────────────────────────────────────────────
-    const scrollVelocity = Math.abs(state.scrollProgress - this.lastScrollProgress) / Math.max(state.delta, 0.001);
-    this.lastScrollProgress = state.scrollProgress;
-    this.smoothedScrollV += (scrollVelocity - this.smoothedScrollV) * Math.min(state.delta * 6, 0.35);
-
-    // Drive animation timescale — scroll fast → sprint cadence, idle → relaxed walk
-    const dynamicTimeScale = 1.0 + Math.min(this.smoothedScrollV * 2.5, 1.2);
-    if (this.walkAction) {
-      this.walkAction.timeScale = dynamicTimeScale;
-    }
-
-    // ── Progression along the route ────────────────────────────────────────
+    // Progression along the route:
+    // Continuous natural movement + scroll advancement
+    // Total virtual loop track length is 60 meters
     const trackLength = 60;
     this.baseZ += state.delta * CharacterController.STRIDE_SPEED;
+
+    // Scroll drives further progress along the route
     const scrollAdvancement = state.scrollProgress * 25;
     const totalAdvancement = (this.baseZ + scrollAdvancement) % trackLength;
+
+    // Normalized progress along the curve (0 to 1)
     const t = Math.min(Math.max(totalAdvancement / trackLength, 0.001), 0.999);
 
+    // Get position on route curve
     const position = pathCurve.getPointAt(t);
     const tangent = pathCurve.getTangentAt(t).normalize();
 
+    // Align character to path position
     this.group.position.copy(position);
+
+    // Align character facing direction along tangent
     const lookTarget = position.clone().add(tangent);
     this.group.lookAt(lookTarget.x, position.y, lookTarget.z);
 
-    // ── Organic secondary motion ─────────────────────────────────────────
-    this.stridePhase += state.delta * dynamicTimeScale * 2.6 * Math.PI;
-    this.breathPhase += state.delta * 0.85 * Math.PI;
-
-    // Full-body lateral sway with stride
-    const lateralSway = Math.sin(this.stridePhase) * 0.025 * dynamicTimeScale;
-    this.group.rotation.z = lateralSway;
-
+    // Subtle natural lateral body sway during stride
     if (this.modelRoot) {
-      // Breathing vertical bob
-      this.modelRoot.position.y = Math.sin(this.breathPhase) * 0.007;
-
-      // Spine — counter-sway, forward lean, subtle twist
-      if (this.spineBone) {
-        const forwardLean = 0.03 + (dynamicTimeScale - 1) * 0.04;
-        this.spineBone.rotation.z = -lateralSway * 0.55;
-        this.spineBone.rotation.x = -forwardLean + Math.sin(this.breathPhase) * 0.007;
-        this.spineBone.rotation.y = Math.sin(this.stridePhase * 0.5) * 0.055;
-      }
-
-      // Head — natural nod and micro-sway
-      if (this.headBone) {
-        this.headBone.rotation.x = -0.04 + Math.sin(this.stridePhase * 2) * 0.015;
-        this.headBone.rotation.z = Math.sin(this.stridePhase + 0.4) * 0.01;
-      }
-
-      // Arms — pendulum opposite to stride
-      if (this.armBoneL) {
-        this.armBoneL.rotation.x = Math.sin(this.stridePhase + Math.PI) * 0.32 * dynamicTimeScale;
-        this.armBoneL.rotation.z = 0.1;
-      }
-      if (this.armBoneR) {
-        this.armBoneR.rotation.x = Math.sin(this.stridePhase) * 0.32 * dynamicTimeScale;
-        this.armBoneR.rotation.z = -0.1;
-      }
+      const strideFreq = 1.08 * Math.PI * 2;
+      this.modelRoot.rotation.z = Math.sin(state.time * strideFreq) * 0.035;
     }
 
     return {
