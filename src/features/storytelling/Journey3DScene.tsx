@@ -38,11 +38,49 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight;
 
-    // 1. Scene & Bright Outdoor Daylight Atmosphere
+    // 1. Scene & Photorealistic Outdoor Daylight Atmosphere
     const scene = new THREE.Scene();
     sceneRef.current = scene;
-    scene.background = new THREE.Color(0xdbeafe); // Warm daylight sky blue
-    scene.fog = new THREE.FogExp2(0xdbeafe, 0.016);
+    scene.background = new THREE.Color(0xdceefb);
+    scene.fog = new THREE.Fog(0xdceefb, 42, 135);
+
+    // Natural Sky Dome with smooth horizon daylight gradient
+    const skyGeo = new THREE.SphereGeometry(280, 32, 20);
+    const skyMat = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      depthWrite: false,
+      uniforms: {
+        topColor: { value: new THREE.Color(0x3b82f6) }, // Rich clear sky blue
+        midColor: { value: new THREE.Color(0x93c5fd) }, // Soft cyan-azure
+        bottomColor: { value: new THREE.Color(0xfef3c7) }, // Warm golden horizon dawn
+        offset: { value: 15 },
+        exponent: { value: 0.75 },
+      },
+      vertexShader: `
+        varying vec3 vWorldPosition;
+        void main() {
+          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPosition.xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 topColor;
+        uniform vec3 midColor;
+        uniform vec3 bottomColor;
+        uniform float offset;
+        uniform float exponent;
+        varying vec3 vWorldPosition;
+        void main() {
+          float h = normalize(vWorldPosition + offset).y;
+          float t = max(pow(max(h, 0.0), exponent), 0.0);
+          vec3 sky = mix(bottomColor, mix(midColor, topColor, t), t);
+          gl_FragColor = vec4(sky, 1.0);
+        }
+      `,
+    });
+    const skyDome = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(skyDome);
 
     // 2. Camera: Elevated three-quarter sports broadcast angle
     const initialFov = window.innerWidth < 768 ? 50 : 48;
@@ -50,7 +88,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     cameraRef.current = camera;
     camera.position.set(4, 5, 24);
 
-    // 3. Renderer
+    // 3. Renderer with high dynamic range color grading
     const renderer = new THREE.WebGLRenderer({
       alpha: false,
       antialias: true,
@@ -60,28 +98,53 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.18;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // 4. Warm Outdoor Lighting Scheme
-    const skyLight = new THREE.AmbientLight(0xbae6fd, 1.4); // Sky fill
-    scene.add(skyLight);
+    // 4. Natural Daylight Lighting Scheme
+    const hemiLight = new THREE.HemisphereLight(0xbfe0fd, 0x6e965f, 1.35); // Sky / green grass bounce
+    scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight(0xffedd5, 2.8); // Golden morning sun
-    sunLight.position.set(15, 28, 12);
+    const sunLight = new THREE.DirectionalLight(0xfff7ed, 2.7); // Warm golden morning sunlight
+    sunLight.position.set(22, 34, 18);
     sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 1024;
-    sunLight.shadow.mapSize.height = 1024;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
     sunLight.shadow.camera.near = 1;
-    sunLight.shadow.camera.far = 160;
-    sunLight.shadow.bias = -0.001;
+    sunLight.shadow.camera.far = 180;
+    sunLight.shadow.camera.left = -25;
+    sunLight.shadow.camera.right = 25;
+    sunLight.shadow.camera.top = 25;
+    sunLight.shadow.camera.bottom = -25;
+    sunLight.shadow.bias = -0.0006;
     scene.add(sunLight);
 
-    const fillLight = new THREE.DirectionalLight(0xfef08a, 1.2); // Warm road fill
-    fillLight.position.set(-14, 16, -10);
+    const fillLight = new THREE.DirectionalLight(0xfef9c3, 0.95); // Soft secondary road fill
+    fillLight.position.set(-18, 16, -14);
     scene.add(fillLight);
+
+    // 4b. Floating Golden Sun Pollen / Breeze Particle System
+    const particleCount = 140;
+    const particleGeo = new THREE.BufferGeometry();
+    const particlePositions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      particlePositions[i * 3] = (Math.random() - 0.5) * 45;
+      particlePositions[i * 3 + 1] = 0.5 + Math.random() * 6.5;
+      particlePositions[i * 3 + 2] = 20 - Math.random() * 110;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+    const particleMat = new THREE.PointsMaterial({
+      color: 0xfff3b0,
+      size: 0.12,
+      transparent: true,
+      opacity: 0.65,
+      blending: THREE.AdditiveBlending,
+    });
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    scene.add(particleSystem);
 
     // 5. Build Continuous Road & Runner
     const road = new JourneyRoad();
@@ -195,6 +258,14 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       currentLookAt.lerp(targetLookAt, Math.min(delta * 4, 0.2));
       camera.lookAt(currentLookAt);
 
+      // Subtle airborne breeze drift on floating sun pollen particles
+      const pPositions = particleGeo.attributes.position.array as Float32Array;
+      for (let i = 0; i < particleCount; i++) {
+        pPositions[i * 3 + 1] += Math.sin(time * 0.8 + i) * 0.003;
+        pPositions[i * 3] += Math.cos(time * 0.5 + i) * 0.002;
+      }
+      particleGeo.attributes.position.needsUpdate = true;
+
       renderer.render(scene, camera);
     };
 
@@ -212,6 +283,10 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
         container.removeChild(renderer.domElement);
       }
 
+      particleGeo.dispose();
+      particleMat.dispose();
+      skyGeo.dispose();
+      skyMat.dispose();
       runner.dispose();
       road.dispose();
       renderer.dispose();
