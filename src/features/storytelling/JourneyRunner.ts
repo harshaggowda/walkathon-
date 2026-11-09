@@ -48,6 +48,7 @@ export class JourneyRunner {
             const clip =
               gltf.animations.find((c) => c.name.toLowerCase().includes('run')) ||
               gltf.animations.find((c) => c.name.toLowerCase().includes('walk')) ||
+              gltf.animations.find((c) => c.name.toLowerCase().includes('mixamo')) ||
               gltf.animations[0];
 
             this.action = this.mixer.clipAction(clip);

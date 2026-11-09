@@ -60,7 +60,14 @@ export class CharacterController {
             const walkClip =
               gltf.animations.find((clip) =>
                 clip.name.toLowerCase().includes('walk')
-              ) || gltf.animations[0];
+              ) ||
+              gltf.animations.find((clip) =>
+                clip.name.toLowerCase().includes('run')
+              ) ||
+              gltf.animations.find((clip) =>
+                clip.name.toLowerCase().includes('mixamo')
+              ) ||
+              gltf.animations[0];
 
             this.walkAction = this.mixer.clipAction(walkClip);
             this.walkAction.setLoop(THREE.LoopRepeat, Infinity);
