@@ -22,8 +22,8 @@ export class JourneyRunner {
         '/models/walker.glb',
         (gltf) => {
           this.modelRoot = gltf.scene;
-          this.modelRoot.scale.set(0.9, 0.9, 0.9);
-          this.modelRoot.rotation.y = Math.PI; // Face forward down track
+          this.modelRoot.scale.set(1.22, 1.22, 1.22); // More prominent athletic runner presence
+          this.modelRoot.rotation.y = 0; // Face forward along road direction
           this.modelRoot.position.set(0, 0, 0);
 
           // Configure athletic daylight runner materials

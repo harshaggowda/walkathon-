@@ -30,8 +30,8 @@ export class CharacterController {
 
           // Scale and initial orientation:
           // The character should face toward negative Z (down the track toward destination)
-          this.modelRoot.scale.set(1.0, 1.0, 1.0);
-          this.modelRoot.rotation.y = Math.PI; // Face forward down track
+          this.modelRoot.scale.set(1.15, 1.15, 1.15);
+          this.modelRoot.rotation.y = 0; // Face forward along track direction
           this.modelRoot.position.set(0, 0, 0);
 
           // Configure materials for athletic campaign aesthetic
