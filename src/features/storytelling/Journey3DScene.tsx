@@ -106,7 +106,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     // Resize handling: sync camera and renderer to container dimensions across breakpoints
-    const handleResize = () => {
+    const applyResponsiveFraming = () => {
       if (!container || !rendererRef.current || !cameraRef.current) return;
       const newW = container.clientWidth || window.innerWidth;
       const newH = container.clientHeight || window.innerHeight;
@@ -116,20 +116,25 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       const rnd = rendererRef.current;
 
       cam.aspect = newW / newH;
-      if (window.innerWidth < 768) {
-        cam.fov = 50;
-      } else if (window.innerWidth < 1024) {
+      rnd.setSize(newW, newH);
+
+      if (window.innerWidth >= 1024) {
         cam.fov = 48;
+        // Shift 3D optical axis to right ~69% of viewport, reserving left 38% for card
+        const shiftX = -Math.round(newW * 0.19);
+        cam.setViewOffset(newW, newH, shiftX, 0, newW, newH);
       } else {
-        cam.fov = 48;
+        cam.fov = window.innerWidth < 768 ? 52 : 48;
+        cam.clearViewOffset();
       }
       cam.updateProjectionMatrix();
-      rnd.setSize(newW, newH);
     };
-    window.addEventListener('resize', handleResize);
+
+    applyResponsiveFraming();
+    window.addEventListener('resize', applyResponsiveFraming);
 
     const resizeObserver = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(() => handleResize())
+      ? new ResizeObserver(() => applyResponsiveFraming())
       : null;
     if (resizeObserver && container) {
       resizeObserver.observe(container);
@@ -140,6 +145,8 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     let lastTime = performance.now();
     const currentLookAt = new THREE.Vector3(0, 1.5, 0);
     const targetLookAt = new THREE.Vector3(0, 1.5, 0);
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const binormalVec = new THREE.Vector3();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -163,36 +170,27 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       currentMouseY += (targetMouseY - currentMouseY) * 0.05;
 
       // Dynamic camera tracking:
-      // Desktop: Camera positioned to the left of the runner aiming forward-right,
-      // ensuring the road and runner are clearly framed on the right half,
+      // Perfectly tracks directly behind runner along road curve tangent.
+      // Symmetrical camera alignment ensures runner and road remain in optical center.
+      // On desktop, setViewOffset projects this center onto the right ~69% of screen,
       // completely clear of the left-hand checkpoint mission cards.
-      // Mobile & Tablet: Centered follow in dedicated upper viewport.
-      const winW = window.innerWidth;
-      const isDesktop = winW >= 1024;
-      const isMobile = winW < 768;
+      // On mobile & tablet portrait, clearViewOffset keeps it centered in upper viewport.
+      const isMobile = window.innerWidth < 768;
+      binormalVec.crossVectors(tangent, upVec).normalize();
 
-      const camOffsetX = isDesktop
-        ? -1.8 + currentMouseX * 0.3
-        : 0;
-      const camOffsetY = isMobile
-        ? 3.6
-        : (isDesktop ? 3.2 - currentMouseY * 0.2 : 3.4);
-      const camOffsetZ = isMobile ? 6.0 : 5.6;
+      const camDist = isMobile ? 6.2 : 5.8;
+      const camHeight = isMobile ? 3.6 : (3.2 - currentMouseY * 0.25);
 
-      const targetCamPos = new THREE.Vector3(
-        position.x + camOffsetX,
-        position.y + camOffsetY,
-        position.z + camOffsetZ
-      );
+      const targetCamPos = position.clone()
+        .addScaledVector(tangent, -camDist)
+        .addScaledVector(upVec, camHeight)
+        .addScaledVector(binormalVec, currentMouseX * 0.35);
 
       camera.position.lerp(targetCamPos, Math.min(delta * 4, 0.2));
 
-      // Camera look-at target: slightly ahead of runner down the road
-      targetLookAt.set(
-        position.x + tangent.x * 5.5 + (isDesktop ? 0.6 : 0),
-        position.y + 1.35,
-        position.z + tangent.z * 5.5
-      );
+      targetLookAt.copy(position)
+        .addScaledVector(tangent, 5.5)
+        .addScaledVector(upVec, 1.35);
 
       currentLookAt.lerp(targetLookAt, Math.min(delta * 4, 0.2));
       camera.lookAt(currentLookAt);
@@ -205,7 +203,7 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', applyResponsiveFraming);
       if (resizeObserver) {
         resizeObserver.disconnect();
       }

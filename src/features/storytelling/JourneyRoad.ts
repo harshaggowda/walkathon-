@@ -20,18 +20,18 @@ export class JourneyRoad {
     this.group.add(this.sceneryGroup);
 
     // 1. Establish the continuous sweeping parkway S-curve
-    // Flowing in the right-hand corridor so track never crosses under the left-side story cards
+    // Flowing gracefully through the park, symmetrically framed and tracked by camera
     const curvePoints = [
-      new THREE.Vector3(4.2, 0, 18),
-      new THREE.Vector3(3.8, 0, 8),
-      new THREE.Vector3(3.0, 0, -2),     // Checkpoint 01 region (~0.15)
-      new THREE.Vector3(2.5, 0, -14),
-      new THREE.Vector3(3.2, 0, -26),   // Checkpoint 02 region (~0.42)
-      new THREE.Vector3(4.2, 0, -38),
-      new THREE.Vector3(4.6, 0, -50),    // Checkpoint 03 region (~0.70)
-      new THREE.Vector3(4.0, 0, -64),
-      new THREE.Vector3(3.4, 0, -78),    // Checkpoint 04 region (~0.94)
-      new THREE.Vector3(3.0, 0, -88),    // Finish destination
+      new THREE.Vector3(0, 0, 18),
+      new THREE.Vector3(0.6, 0, 8),
+      new THREE.Vector3(-0.4, 0, -2),     // Checkpoint 01 region (~0.15)
+      new THREE.Vector3(0.5, 0, -14),
+      new THREE.Vector3(1.0, 0, -26),    // Checkpoint 02 region (~0.42)
+      new THREE.Vector3(0.2, 0, -38),
+      new THREE.Vector3(-0.6, 0, -50),   // Checkpoint 03 region (~0.70)
+      new THREE.Vector3(0.4, 0, -64),
+      new THREE.Vector3(0.8, 0, -78),    // Checkpoint 04 region (~0.94)
+      new THREE.Vector3(0, 0, -88),      // Finish destination
     ];
 
     this.curve = new THREE.CatmullRomCurve3(curvePoints, false, 'centripetal');
@@ -304,8 +304,8 @@ export class JourneyRoad {
       const normal = new THREE.Vector3(0, 1, 0);
       const binormal = new THREE.Vector3().crossVectors(tangent, normal).normalize();
 
-      // Trees on both sides (offset 4.5m to 8m from road center)
-      [-5.2, 5.2].forEach((sideOffset, sideIdx) => {
+      // Trees on both sides (offset 3.8m on left, 4.6m on right)
+      [-3.8, 4.6].forEach((sideOffset, sideIdx) => {
         const treeGroup = new THREE.Group();
         const treePos = pt.clone().addScaledVector(binormal, sideOffset * (0.9 + ((i * 13 + sideIdx * 7) % 10) / 30));
         treeGroup.position.set(treePos.x, 0, treePos.z);
