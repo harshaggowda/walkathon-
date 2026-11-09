@@ -20,18 +20,18 @@ export class JourneyRoad {
     this.group.add(this.sceneryGroup);
 
     // 1. Establish the continuous sweeping parkway S-curve
-    // Starting in the foreground right, winding across center to left, curving through park to grand finish arch
+    // Flowing in the right-hand corridor so track never crosses under the left-side story cards
     const curvePoints = [
-      new THREE.Vector3(2.5, 0, 18),
-      new THREE.Vector3(1.8, 0, 8),
-      new THREE.Vector3(0.5, 0, -2),     // Checkpoint 01 region (~0.15)
-      new THREE.Vector3(-1.8, 0, -14),
-      new THREE.Vector3(-2.6, 0, -26),   // Checkpoint 02 region (~0.42)
-      new THREE.Vector3(-1.0, 0, -38),
-      new THREE.Vector3(1.4, 0, -50),    // Checkpoint 03 region (~0.70)
-      new THREE.Vector3(1.8, 0, -64),
-      new THREE.Vector3(0.4, 0, -78),    // Checkpoint 04 region (~0.94)
-      new THREE.Vector3(0, 0, -88),      // Finish destination
+      new THREE.Vector3(4.2, 0, 18),
+      new THREE.Vector3(3.8, 0, 8),
+      new THREE.Vector3(3.0, 0, -2),     // Checkpoint 01 region (~0.15)
+      new THREE.Vector3(2.5, 0, -14),
+      new THREE.Vector3(3.2, 0, -26),   // Checkpoint 02 region (~0.42)
+      new THREE.Vector3(4.2, 0, -38),
+      new THREE.Vector3(4.6, 0, -50),    // Checkpoint 03 region (~0.70)
+      new THREE.Vector3(4.0, 0, -64),
+      new THREE.Vector3(3.4, 0, -78),    // Checkpoint 04 region (~0.94)
+      new THREE.Vector3(3.0, 0, -88),    // Finish destination
     ];
 
     this.curve = new THREE.CatmullRomCurve3(curvePoints, false, 'centripetal');

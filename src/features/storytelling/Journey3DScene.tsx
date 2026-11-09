@@ -163,19 +163,21 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
       currentMouseY += (targetMouseY - currentMouseY) * 0.05;
 
       // Dynamic camera tracking:
-      // Desktop: offset over right shoulder looking down the route and framing the left-hand story panel
-      // Mobile & Tablet: centered framing tailored to dedicated scene area
+      // Desktop: Camera positioned to the left of the runner aiming forward-right,
+      // ensuring the road and runner are clearly framed on the right half,
+      // completely clear of the left-hand checkpoint mission cards.
+      // Mobile & Tablet: Centered follow in dedicated upper viewport.
       const winW = window.innerWidth;
       const isDesktop = winW >= 1024;
       const isMobile = winW < 768;
 
       const camOffsetX = isDesktop
-        ? 2.2 + currentMouseX * 0.4
-        : 0.25;
+        ? -1.8 + currentMouseX * 0.3
+        : 0;
       const camOffsetY = isMobile
-        ? 3.8
-        : (isDesktop ? 3.4 - currentMouseY * 0.3 : 3.6);
-      const camOffsetZ = isMobile ? 6.2 : 5.8;
+        ? 3.6
+        : (isDesktop ? 3.2 - currentMouseY * 0.2 : 3.4);
+      const camOffsetZ = isMobile ? 6.0 : 5.6;
 
       const targetCamPos = new THREE.Vector3(
         position.x + camOffsetX,
@@ -187,9 +189,9 @@ export const Journey3DScene: React.FC<Journey3DSceneProps> = ({
 
       // Camera look-at target: slightly ahead of runner down the road
       targetLookAt.set(
-        position.x + tangent.x * 6 + (isDesktop ? -0.8 : 0),
-        position.y + 1.4,
-        position.z + tangent.z * 6
+        position.x + tangent.x * 5.5 + (isDesktop ? 0.6 : 0),
+        position.y + 1.35,
+        position.z + tangent.z * 5.5
       );
 
       currentLookAt.lerp(targetLookAt, Math.min(delta * 4, 0.2));
